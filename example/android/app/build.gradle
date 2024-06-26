@@ -1,6 +1,7 @@
 plugins {
-    id "com.android.application" 
-    id "dev.flutter.flutter-gradle-plugin" 
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
 }
 
 def localProperties = new Properties()
@@ -22,8 +23,8 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace "com.example.flutter_thermal_printer_example"
-    compileSdkVersion flutter.compileSdkVersion
+    namespace "com.example.example"
+    compileSdk 33
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -31,17 +32,24 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.example.flutter_thermal_printer_example"
+        applicationId "com.example.example"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion 21
-        targetSdkVersion flutter.targetSdkVersion
+        minSdkVersion 23
+        targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName 
+        versionName flutterVersionName
     }
-    
 
     buildTypes {
         release {
@@ -55,3 +63,5 @@ android {
 flutter {
     source '../..'
 }
+
+dependencies {}
