@@ -242,7 +242,7 @@ class OtherPrinterManager {
     List<Printer> btlist = [];
     if (connectionTypes.contains(ConnectionType.BLE)) {
       subscription?.cancel();
-      await FlutterBluePlus.startScan();
+      await FlutterBluePlus.startScan(androidUsesFineLocation: true);
       subscription = FlutterBluePlus.scanResults.listen((device) {
         final devices = device.map(
           (e) {

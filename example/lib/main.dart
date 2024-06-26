@@ -37,8 +37,7 @@ class _MyAppState extends State<MyApp> {
         printers = event;
         printers.removeWhere((element) =>
             element.name == null ||
-            element.name == '' ||
-            !element.name!.toLowerCase().contains('print'));
+            element.name == '') ;
       });
     });
   }
@@ -78,8 +77,8 @@ class _MyAppState extends State<MyApp> {
           children: [
             ElevatedButton(
               onPressed: () {
-                // startScan();
-                getUsbDevices();
+                startScan();
+                // getUsbDevices();
               },
               child: const Text('Get Printers'),
             ),
