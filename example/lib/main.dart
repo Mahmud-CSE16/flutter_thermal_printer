@@ -2,11 +2,13 @@
 
 import 'dart:async';
 import 'dart:developer';
-
+import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_thermal_printer/flutter_thermal_printer.dart';
 import 'package:flutter_thermal_printer/utils/printer.dart';
+import 'package:screenshot/screenshot.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,19 +27,26 @@ class _MyAppState extends State<MyApp> {
   List<Printer> printers = [];
 
   StreamSubscription<List<Printer>>? _devicesStreamSubscription;
+  bool bluetoothON = false;
 
   // Get Printer List
   void startScan() async {
+    FlutterBluePlus.adapterState.listen((event) {
+      if (FlutterBluePlus.adapterStateNow == BluetoothAdapterState.off) {
+        bluetoothON = false;
+        log("BLUETOOTH IS OFF");
+      } else {
+        bluetoothON = true;
+        log("BLUETOOTH IS ON");
+      }
+    });
     _devicesStreamSubscription?.cancel();
     await _flutterThermalPrinterPlugin.getPrinters();
-    _devicesStreamSubscription = _flutterThermalPrinterPlugin.devicesStream
-        .listen((List<Printer> event) {
+    _devicesStreamSubscription = _flutterThermalPrinterPlugin.devicesStream.listen((List<Printer> event) {
       log(event.map((e) => e.name).toList().toString());
       setState(() {
         printers = event;
-        printers.removeWhere((element) =>
-            element.name == null ||
-            element.name == '') ;
+        printers.removeWhere((element) => element.name == null || element.name == '');
       });
     });
   }
@@ -45,21 +54,62 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _devicesStreamSubscription = _flutterThermalPrinterPlugin.devicesStream
-        .listen((List<Printer> event) {
+    //*******Added listener**********//
+    _devicesStreamSubscription = _flutterThermalPrinterPlugin.devicesStream.listen((List<Printer> event) {
       log(event.map((e) => e.name).toList().toString());
       setState(() {
         printers = event;
-        printers.removeWhere((element) =>
-            element.name == null ||
-            element.name == '' ||
-            !element.name!.toLowerCase().contains('print'));
+        printers.removeWhere((element) => element.name == null || element.name == '');
       });
     });
   }
 
   void getUsbDevices() async {
     await _flutterThermalPrinterPlugin.getUsbDevices();
+  }
+
+  img.Image getGrayscaleImage({required Uint8List imageBytes, int? height, int width = 385}) {
+    final decodedImage = img.decodeImage(imageBytes)!;
+
+    img.Image thumbnail = img.copyResize(decodedImage, height: height ?? decodedImage.height);
+    img.Image originalImg = img.copyResize(decodedImage, height: height ?? decodedImage.height);
+    img.fill(originalImg, color: img.ColorRgb8(255, 255, 255));
+    var padding = (originalImg.width - thumbnail.width) / 2;
+
+    //insert the image inside the frame and center it
+    img.compositeImage(originalImg, thumbnail, dstX: padding.toInt());
+
+    // convert image to grayscale
+    return img.grayscale(originalImg);
+  }
+
+  void testPrint(index) async {
+    final profile = await CapabilityProfile.load();
+    final generator = Generator(PaperSize.mm58, profile);
+    List<int> bytes = [];
+
+    final receiptItemsImage = getGrayscaleImage(imageBytes: await getReceiptImage());
+    bytes += generator.imageRaster(receiptItemsImage, align: PosAlign.center);
+    bytes += generator.qrcode("https://www.zatiq.com/", size: QRSize.Size8, align: PosAlign.center);
+
+    // bytes += generator.text("Sunil Kumar",
+    //     styles: const PosStyles(
+    //       bold: true,
+    //       height: PosTextSize.size2,
+    //       width: PosTextSize.size2,
+    //     ));
+    // bytes += generator.cut();
+
+    await _flutterThermalPrinterPlugin.printData(
+      printers[index],
+      bytes,
+      longData: true,
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -82,6 +132,12 @@ class _MyAppState extends State<MyApp> {
               },
               child: const Text('Get Printers'),
             ),
+            // if(printers.isEmpty) Container(
+            //   child: Text(),
+            // ),
+
+            if (!bluetoothON) const Text("Currently, your bluetooth is off"),
+
             Expanded(
               child: ListView.builder(
                 itemCount: printers.length,
@@ -89,35 +145,18 @@ class _MyAppState extends State<MyApp> {
                   return ListTile(
                     onTap: () async {
                       if (printers[index].isConnected ?? false) {
-                        await _flutterThermalPrinterPlugin
-                            .disconnect(printers[index]);
+                        await _flutterThermalPrinterPlugin.disconnect(printers[index]);
                       } else {
-                        final isConnected = await _flutterThermalPrinterPlugin
-                            .connect(printers[index]);
+                        final isConnected = await _flutterThermalPrinterPlugin.connect(printers[index]);
                         log("Devices: $isConnected");
                       }
                     },
                     title: Text(printers[index].name ?? 'No Name'),
-                    subtitle: Text(
-                        "VendorId: ${printers[index].address} - Connected: ${printers[index].isConnected}"),
+                    subtitle: Text("VendorId: ${printers[index].address} - Connected: ${printers[index].isConnected}"),
                     trailing: IconButton(
                       icon: const Icon(Icons.connect_without_contact),
                       onPressed: () async {
-                        final profile = await CapabilityProfile.load();
-                        final generator = Generator(PaperSize.mm80, profile);
-                        List<int> bytes = [];
-                        bytes += generator.text("Sunil Kumar",
-                            styles: const PosStyles(
-                              bold: true,
-                              height: PosTextSize.size2,
-                              width: PosTextSize.size2,
-                            ));
-                        bytes += generator.cut();
-                        await _flutterThermalPrinterPlugin.printData(
-                          printers[index],
-                          bytes,
-                          longData: true,
-                        );
+                        testPrint(index);
                       },
                     ),
                   );
@@ -129,44 +168,44 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
-
+  Future<Uint8List> getReceiptImage() async {
+    return ScreenshotController().captureFromWidget(receiptWidget(),context:context);
+  }
   Widget receiptWidget() {
-    return Container(
-        padding: const EdgeInsets.all(8),
-        color: Colors.white,
-        width: 300,
-        height: 300,
-        child: const Center(
-          child: Column(
-            children: [
-              Text(
-                "FLUTTER THERMAL PRINTER",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              SizedBox(height: 10),
-              Text(
-                "Hello World",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              SizedBox(height: 10),
-              Text(
-                "This is a test receipt",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-            ],
+    return const SizedBox(
+       width: 125,
+      child: Column(
+         crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            "FLUTTER THERMAL PRINTER",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
           ),
-        ));
+          SizedBox(height: 10),
+          Text(
+            "Hello World",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          SizedBox(height: 10),
+          Text(
+            "This is a test receipt",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

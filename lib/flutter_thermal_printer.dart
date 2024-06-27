@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -95,10 +96,7 @@ class FlutterThermalPrinter {
 
   Future<void> getPrinters({
     Duration refreshDuration = const Duration(seconds: 2),
-    List<ConnectionType> connectionTypes = const [
-      ConnectionType.USB,
-      ConnectionType.BLE
-    ],
+    List<ConnectionType> connectionTypes = const [ConnectionType.USB, ConnectionType.BLE],
   }) async {
     if (Platform.isWindows) {
       WindowPrinterManager.instance.getPrinters(
