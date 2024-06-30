@@ -88,17 +88,17 @@ class _MyAppState extends State<MyApp> {
     final generator = Generator(PaperSize.mm58, profile);
     List<int> bytes = [];
 
-    final receiptItemsImage = getGrayscaleImage(imageBytes: await getReceiptImage());
-    bytes += generator.imageRaster(receiptItemsImage, align: PosAlign.center);
+    // final receiptItemsImage = getGrayscaleImage(imageBytes: await getReceiptImage());
+    // bytes += generator.imageRaster(receiptItemsImage, align: PosAlign.center);
     bytes += generator.qrcode("https://www.zatiq.com/", size: QRSize.Size8, align: PosAlign.center);
 
-    // bytes += generator.text("Sunil Kumar",
-    //     styles: const PosStyles(
-    //       bold: true,
-    //       height: PosTextSize.size2,
-    //       width: PosTextSize.size2,
-    //     ));
-    // bytes += generator.cut();
+    bytes += generator.text("Sunil Kumar",
+        styles: const PosStyles(
+          bold: true,
+          height: PosTextSize.size2,
+          width: PosTextSize.size2,
+        ));
+    bytes += generator.cut();
 
     await _flutterThermalPrinterPlugin.printData(
       printers[index],
@@ -181,25 +181,25 @@ class _MyAppState extends State<MyApp> {
           Text(
             "FLUTTER THERMAL PRINTER",
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 12,
               fontWeight: FontWeight.bold,
               color: Colors.black,
             ),
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 3),
           Text(
             "Hello World",
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 10,
               fontWeight: FontWeight.bold,
               color: Colors.black,
             ),
           ),
-          SizedBox(height: 10),
+          SizedBox(height:3),
           Text(
             "This is a test receipt",
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 10,
               fontWeight: FontWeight.bold,
               color: Colors.black,
             ),
