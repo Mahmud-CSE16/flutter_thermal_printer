@@ -31,25 +31,25 @@ class OtherPrinterManager {
   Future<void> startScan() async {
     try {
       await FlutterBluePlus.startScan();
-      if (Platform.isAndroid) {
-        _devicesstream.add((await FlutterBluePlus.systemDevices)
-            .map((e) => Printer(
-                  address: e.remoteId.str,
-                  name: e.platformName,
-                  connectionType: ConnectionType.BLE,
-                  isConnected: e.isConnected,
-                ))
-            .toList());
-        // Bonded devices
-        _devicesstream.add((await FlutterBluePlus.bondedDevices)
-            .map((e) => Printer(
-                  address: e.remoteId.str,
-                  name: e.platformName,
-                  connectionType: ConnectionType.BLE,
-                  isConnected: e.isConnected,
-                ))
-            .toList());
-      }
+      // if (Platform.isAndroid) {
+      //   _devicesstream.add((await FlutterBluePlus.systemDevices)
+      //       .map((e) => Printer(
+      //             address: e.remoteId.str,
+      //             name: e.platformName,
+      //             connectionType: ConnectionType.BLE,
+      //             isConnected: e.isConnected,
+      //           ))
+      //       .toList());
+      //   // Bonded devices
+      //   _devicesstream.add((await FlutterBluePlus.bondedDevices)
+      //       .map((e) => Printer(
+      //             address: e.remoteId.str,
+      //             name: e.platformName,
+      //             connectionType: ConnectionType.BLE,
+      //             isConnected: e.isConnected,
+      //           ))
+      //       .toList());
+      // }
       subscription = FlutterBluePlus.scanResults.listen((device) {
         _devicesstream.add(
           device.map(
