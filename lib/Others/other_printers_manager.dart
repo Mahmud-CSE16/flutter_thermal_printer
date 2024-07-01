@@ -51,8 +51,6 @@ class OtherPrinterManager {
       //           ))
       //       .toList());
       // }
-      subscription?.cancel();
-      _devicesstream?.close();
       subscription = FlutterBluePlus.scanResults.listen((device) {
         _devicesstream.add(
           device.map(
