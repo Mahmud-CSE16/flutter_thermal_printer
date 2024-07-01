@@ -198,7 +198,7 @@ class OtherPrinterManager {
 
   // USB
   Future<dynamic> startUsbScan({
-    Duration refreshDuration = const Duration(seconds: 5),
+    Duration refreshDuration = const Duration(seconds: 1),
   }) async {
     if (Platform.isAndroid || Platform.isMacOS) {
       _usbSubscription?.cancel();
@@ -230,7 +230,7 @@ class OtherPrinterManager {
 
   // Get Printers from BT and USB
   void getPrinters({
-    Duration refreshDuration = const Duration(seconds: 5),
+    Duration refreshDuration = const Duration(seconds: 1),
     List<ConnectionType> connectionTypes = const [
       ConnectionType.BLE,
       ConnectionType.USB,
