@@ -278,9 +278,9 @@ class OtherPrinterManager {
         list = templist;
       });
     }
-    // _preiodicCall = Stream.periodic(refreshDuration, (x) => x).listen((event) {
-    //   _devicesstream?.add(list + btlist);
-    // });
+    _preiodicCall = Stream.periodic(refreshDuration, (x) => x).listen((event) {
+      _devicesstream?.add(list + btlist);
+    });
   }
 
   Future<dynamic> convertImageToGrayscale(Uint8List? value) async {
