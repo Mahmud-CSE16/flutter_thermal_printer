@@ -84,6 +84,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   void testPrint(index) async {
+    
+   
     final profile = await CapabilityProfile.load();
     final generator = Generator(PaperSize.mm58, profile);
     List<int> bytes = [];
@@ -99,6 +101,8 @@ class _MyAppState extends State<MyApp> {
           width: PosTextSize.size2,
         ));
     bytes += generator.cut();
+
+     print("hello from print");
 
     await _flutterThermalPrinterPlugin.printData(
       printers[index],
