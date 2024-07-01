@@ -94,17 +94,23 @@ class OtherPrinterManager {
         // await bt.connectAndUpdateStream().catchError((e) {
         //   log('Failed to connect to device $e');
         // });
-        await bt.connect();
-        await stopScan();
-        getPrinters();
-        //
-        final stream = bt.connectionState.listen((event) {
-          if (event == BluetoothConnectionState.connected) {
-            isConnected = true;
-          }
+
+        await bt.connect().then((val) async {
+          await stopScan();
+          getPrinters();
+          return true;
+        }).catchError((error) {
+          return false;
         });
-        await Future.delayed(const Duration(seconds: 3));
-        await stream.cancel();
+
+        //
+        // final stream = bt.connectionState.listen((event) {
+        //   if (event == BluetoothConnectionState.connected) {
+        //     isConnected = true;
+        //   }
+        // });
+        // await Future.delayed(const Duration(seconds: 3));
+        // await stream.cancel();
         return isConnected;
       } catch (e) {
         return false;
@@ -129,12 +135,13 @@ class OtherPrinterManager {
     if (device.connectionType == ConnectionType.BLE) {
       try {
         final bt = BluetoothDevice.fromId(device.address!);
-        await bt.disconnect();
+        await bt.disconnect().then((val) async {
+          await stopScan();
+          getPrinters();
+        });
         // await bt.disconnectAndUpdateStream().catchError((e) {
         //   log('Failed to disconnect device $e');
         // });
-        await stopScan();
-        getPrinters();
       } catch (e) {
         log('Failed to disconnect device');
       }
