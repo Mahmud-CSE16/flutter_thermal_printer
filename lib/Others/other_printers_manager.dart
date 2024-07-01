@@ -52,7 +52,7 @@ class OtherPrinterManager {
       //       .toList());
       // }
       subscription = FlutterBluePlus.scanResults.listen((device) {
-        _devicesstream.add(
+        _devicesstream?.add(
           device.map(
             (e) {
               return Printer(
@@ -230,7 +230,7 @@ class OtherPrinterManager {
           device.isConnected = isConnected;
           list.add(device);
         }
-        _devicesstream.add(list);
+        _devicesstream?.add(list);
       });
       return;
     } else {
@@ -294,7 +294,7 @@ class OtherPrinterManager {
       });
     }
     Stream.periodic(refreshDuration, (x) => x).listen((event) {
-      _devicesstream.add(list + btlist);
+      _devicesstream?.add(list + btlist);
     });
   }
 
