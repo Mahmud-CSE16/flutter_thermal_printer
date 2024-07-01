@@ -90,11 +90,14 @@ class OtherPrinterManager {
       try {
         bool isConnected = false;
         final bt = BluetoothDevice.fromId(device.address!);
-    
-        await bt.connectAndUpdateStream().catchError((e) {
-          log('Failed to connect to device $e');
-        });
-            await bt.connect();
+
+        // await bt.connectAndUpdateStream().catchError((e) {
+        //   log('Failed to connect to device $e');
+        // });
+        await bt.connect();
+        await stopScan();
+        getPrinters();
+        //
         final stream = bt.connectionState.listen((event) {
           if (event == BluetoothConnectionState.connected) {
             isConnected = true;
@@ -127,9 +130,11 @@ class OtherPrinterManager {
       try {
         final bt = BluetoothDevice.fromId(device.address!);
         await bt.disconnect();
-        await bt.disconnectAndUpdateStream().catchError((e) {
-          log('Failed to disconnect device $e');
-        });
+        // await bt.disconnectAndUpdateStream().catchError((e) {
+        //   log('Failed to disconnect device $e');
+        // });
+        await stopScan();
+        getPrinters();
       } catch (e) {
         log('Failed to disconnect device');
       }
