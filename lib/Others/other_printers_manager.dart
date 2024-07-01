@@ -28,12 +28,14 @@ class OtherPrinterManager {
   EventChannel? _eventChannel;
   static String channelName = 'flutter_thermal_printer/events';
 
+  StreamSubscription? _preiodicCall;
+
   // Start scanning for BLE devices
   Future<void> startScan() async {
     try {
       await FlutterBluePlus.startScan();
       if (Platform.isAndroid) {
-        _devicesstream.add((await FlutterBluePlus.systemDevices)
+        _devicesstream?.add((await FlutterBluePlus.systemDevices)
             .map((e) => Printer(
                   address: e.remoteId.str,
                   name: e.platformName,
@@ -42,7 +44,7 @@ class OtherPrinterManager {
                 ))
             .toList());
         // Bonded devices
-        _devicesstream.add((await FlutterBluePlus.bondedDevices)
+        _devicesstream?.add((await FlutterBluePlus.bondedDevices)
             .map((e) => Printer(
                   address: e.remoteId.str,
                   name: e.platformName,
@@ -73,7 +75,8 @@ class OtherPrinterManager {
   // Stop scanning for BLE devices
   Future<void> stopScan() async {
     try {
-      // await subscription?.cancel();
+      await _preiodicCall?.cancel();
+      await subscription?.cancel();
       await FlutterBluePlus.stopScan();
     } catch (e) {
       log('Failed to stop scanning for devices $e');
@@ -275,9 +278,9 @@ class OtherPrinterManager {
         list = templist;
       });
     }
-    Stream.periodic(refreshDuration, (x) => x).listen((event) {
-      _devicesstream?.add(list + btlist);
-    });
+    // _preiodicCall = Stream.periodic(refreshDuration, (x) => x).listen((event) {
+    //   _devicesstream?.add(list + btlist);
+    // });
   }
 
   Future<dynamic> convertImageToGrayscale(Uint8List? value) async {
