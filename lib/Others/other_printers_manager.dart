@@ -75,7 +75,7 @@ class OtherPrinterManager {
     try {
       await subscription?.cancel();
       await FlutterBluePlus.stopScan();
-      await _devicesstream.close();
+      // await _devicesstream.close();
       await _usbSubscription?.cancel();
     } catch (e) {
       log('Failed to stop scanning for devices $e');
