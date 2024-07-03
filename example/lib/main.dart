@@ -41,6 +41,7 @@ class _MyAppState extends State<MyApp> {
       }
     });
     _devicesStreamSubscription?.cancel();
+    // await _flutterThermalPrinterPlugin.getUsbDevices();
     await _flutterThermalPrinterPlugin.getPrinters();
     _devicesStreamSubscription = _flutterThermalPrinterPlugin.devicesStream.listen((List<Printer> event) {
       log(event.map((e) => e.name).toList().toString());
@@ -131,8 +132,8 @@ class _MyAppState extends State<MyApp> {
           children: [
             ElevatedButton(
               onPressed: () {
-                startScan();
-                // getUsbDevices();
+                // startScan();
+                getUsbDevices();
               },
               child: const Text('Get Printers'),
             ),

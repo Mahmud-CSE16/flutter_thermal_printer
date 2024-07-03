@@ -1,5 +1,7 @@
 // ignore_for_file: constant_identifier_names
 
+import 'package:esc_pos_utils_plus/esc_pos_utils_plus.dart';
+
 class Printer {
   String? address;
   String? name;
@@ -7,6 +9,7 @@ class Printer {
   bool? isConnected;
   String? vendorId;
   String? productId;
+  PaperSize? paperSize;
 
   Printer({
     this.address,
@@ -15,6 +18,7 @@ class Printer {
     this.isConnected,
     this.vendorId,
     this.productId,
+    this.paperSize = PaperSize.mm58,
   });
 
   Printer.fromJson(Map<String, dynamic> json) {

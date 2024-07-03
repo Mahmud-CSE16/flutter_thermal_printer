@@ -77,6 +77,7 @@ class OtherPrinterManager {
     try {
       await _preiodicCall?.cancel();
       await subscription?.cancel();
+
       await FlutterBluePlus.stopScan();
     } catch (e) {
       log('Failed to stop scanning for devices $e');
@@ -91,13 +92,13 @@ class OtherPrinterManager {
         bool isConnected = false;
         final bt = BluetoothDevice.fromId(device.address!);
 
-        // await bt.connectAndUpdateStream().catchError((e) {
-        //   log('Failed to connect to device $e');
-        // });
+        await bt.connectAndUpdateStream().catchError((e) {
+          log('Failed to connect to device $e');
+        });
 
         await bt.connect().then((val) async {
-          await stopScan();
-          getPrinters();
+          // await stopScan();
+          // getPrinters();
           return true;
         }).catchError((error) {
           return false;
@@ -135,13 +136,13 @@ class OtherPrinterManager {
     if (device.connectionType == ConnectionType.BLE) {
       try {
         final bt = BluetoothDevice.fromId(device.address!);
-        await bt.disconnect().then((val) async {
-          await stopScan();
-          getPrinters();
+        await bt.disconnectAndUpdateStream().catchError((e) {
+          log('Failed to disconnect device $e');
         });
-        // await bt.disconnectAndUpdateStream().catchError((e) {
-        //   log('Failed to disconnect device $e');
-        // });
+        await bt.disconnect().then((val) async {
+          // await stopScan();
+          // getPrinters();
+        });
       } catch (e) {
         log('Failed to disconnect device');
       }
