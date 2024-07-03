@@ -92,7 +92,7 @@ class OtherPrinterManager {
         bool isConnected = false;
         final bt = BluetoothDevice.fromId(device.address!);
 
-        await bt.connectAndUpdateStream().catchError((e) {
+        bt.connectAndUpdateStream().catchError((e) {
           log('Failed to connect to device $e');
         });
 
@@ -136,7 +136,7 @@ class OtherPrinterManager {
     if (device.connectionType == ConnectionType.BLE) {
       try {
         final bt = BluetoothDevice.fromId(device.address!);
-        await bt.disconnectAndUpdateStream().catchError((e) {
+        bt.disconnectAndUpdateStream().catchError((e) {
           log('Failed to disconnect device $e');
         });
         await bt.disconnect().then((val) async {
