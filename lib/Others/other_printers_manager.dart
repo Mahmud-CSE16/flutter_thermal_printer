@@ -96,11 +96,18 @@ class OtherPrinterManager {
           // await stopScan();
           // getPrinters();
           return true;
-        }).catchError((error) {
-          return false;
+        }).catchError((error) async {
+          final stream = bt.connectionState.listen((event) {
+            if (event == BluetoothConnectionState.connected) {
+              isConnected = true;
+            }
+          });
+          await Future.delayed(const Duration(seconds: 3));
+          await stream.cancel();
+          return isConnected;
         });
 
-        // bt.connectAndUpdateStream().catchError((e) {
+        //         bt.connectAndUpdateStream().catchError((e) {
         //   log('Failed to connect to device $e');
         // });
 
