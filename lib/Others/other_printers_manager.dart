@@ -95,7 +95,7 @@ class OtherPrinterManager {
         await bt.connect().then((val) async {
           // await stopScan();
           // getPrinters();
-          return true;
+          isConnected = true;
         }).catchError((error) async {
           final stream = bt.connectionState.listen((event) {
             if (event == BluetoothConnectionState.connected) {
