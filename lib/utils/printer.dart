@@ -31,6 +31,7 @@ class Printer {
     isConnected = json['isConnected'];
     vendorId = json['vendorId'];
     productId = json['productId'];
+    paperSize = json['paperSize'] == PaperSize.mm58.value? PaperSize.mm58 : json['paperSize'] == PaperSize.mm72.value? PaperSize.mm72 : PaperSize.mm80;
   }
 
   Map<String, dynamic> toJson() {
@@ -46,6 +47,7 @@ class Printer {
     data['isConnected'] = isConnected;
     data['vendorId'] = vendorId;
     data['productId'] = productId;
+    data['paperSize'] = paperSize?.value??1;
     return data;
   }
 }
