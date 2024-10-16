@@ -93,7 +93,7 @@ class _MyAppState extends State<MyApp> {
 
     // final receiptItemsImage = getGrayscaleImage(imageBytes: await getReceiptImage());
     // bytes += generator.imageRaster(receiptItemsImage, align: PosAlign.center);
-    bytes += generator.qrcode("https://www.zatiq.com/", size: QRSize.Size8, align: PosAlign.center);
+    bytes += generator.qrcode("https://www.zatiq.com/", size: QRSize.size8, align: PosAlign.center);
 
     bytes += generator.text("Sunil Kumar",
         styles: const PosStyles(

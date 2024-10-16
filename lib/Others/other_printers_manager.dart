@@ -35,8 +35,8 @@ class OtherPrinterManager {
     try {
       await FlutterBluePlus.startScan();
       if (Platform.isAndroid) {
-        _devicesstream?.add((await FlutterBluePlus.systemDevices)
-            .map((e) => Printer(
+        List<Guid> withServices = [Guid("180F")];
+        _devicesstream.add((await FlutterBluePlus.systemDevices(withServices)).map((e) => Printer(
                   address: e.remoteId.str,
                   name: e.platformName,
                   connectionType: ConnectionType.BLE,
@@ -44,7 +44,7 @@ class OtherPrinterManager {
                 ))
             .toList());
         // Bonded devices
-        _devicesstream?.add((await FlutterBluePlus.bondedDevices)
+        _devicesstream.add((await FlutterBluePlus.bondedDevices)
             .map((e) => Printer(
                   address: e.remoteId.str,
                   name: e.platformName,
@@ -54,7 +54,7 @@ class OtherPrinterManager {
             .toList());
       }
       subscription = FlutterBluePlus.scanResults.listen((device) {
-        _devicesstream?.add(
+        _devicesstream.add(
           device.map(
             (e) {
               return Printer(
@@ -243,7 +243,7 @@ class OtherPrinterManager {
           device.isConnected = isConnected;
           list.add(device);
         }
-        _devicesstream?.add(list);
+        _devicesstream.add(list);
       });
       return;
     } else {
@@ -302,7 +302,7 @@ class OtherPrinterManager {
       });
     }
     _preiodicCall = Stream.periodic(refreshDuration, (x) => x).listen((event) {
-      _devicesstream?.add(list + btlist);
+      _devicesstream.add(list + btlist);
     });
   }
 
